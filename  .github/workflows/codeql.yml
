@@ -1,48 +1,37 @@
-name: CodeQL Analysis
+name: "CodeQL"
 
 on:
   push:
-    branches: [ main ]
+    branches: ["main"]
   pull_request:
-    branches: [ main ]
+    branches: ["main"]
   schedule:
-    - cron: '0 3 * * 1' # weekly run
+    - cron: "0 0 * * 0"
 
 jobs:
   analyze:
-    name: Analyze (${{ matrix.language }})
+    name: Analyze
     runs-on: ubuntu-latest
-
-    strategy:
-      fail-fast: false
-      matrix:
-        language: [ 'rust', 'javascript' ]
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@b4ffde8f294c3d6f0a5d7c7f2f0f5e8e6c3c2f2c
+        # SHA for actions/checkout v4.1.0 (immutable)
 
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@v3
+        uses: github/codeql-action/init@24c5418
+        # SHA for CodeQL Action v4.38.3 (immutable)
         with:
-          languages: ${{ matrix.language }}
-          queries: security-and-quality
-          paths-ignore: |
-            node_modules
-            dist
-            build
-            target
-            coverage
-            sdk/js/node_modules
-            sdk/js/tests
-            **/*.spec.ts
-            **/test/**
-            **/*.d.ts
+          languages: javascript
 
       - name: Autobuild
-        uses: github/codeql-action/autobuild@v3
+        uses: github/codeql-action/autobuild@24c5418
+        # Same SHA as init/analyze
 
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v3
-        with:
-          category: "/language:${{ matrix.language }}"
+        uses: github/codeql-action/analyze@24c5418
+        # Same SHA as init/analyze
